@@ -14,7 +14,7 @@ pipeline {
 	stages {
 		stage('build') {
 			steps {
-			
+				sh 'pip3.6 install pfurl' 
 			}
 		}
 
