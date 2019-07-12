@@ -64,8 +64,7 @@ RUN wget --quiet http://mirrors.jenkins-ci.org/war/latest/jenkins.war -O /opt/je
 # create custom run.sh
 RUN echo "/opt/jdk18/bin/java ${JAVA_OPTS} -jar /opt/jenkins.war ${JENKINS_OPTIONS}" >> /opt/run.sh
 
-# start jenkins on container start
-CMD su - jenkins -c "sh /opt/run.sh"
+
 
 # for main web interface:
 EXPOSE 8080
@@ -73,5 +72,5 @@ EXPOSE 8080
 # will be used by attached slave agents:
 EXPOSE 50000
 
-USER jenkins
-ENTRYPOINT ["/bin/bash"]
+# start jenkins on container start
+CMD su - jenkins -c "sh /opt/run.sh"
