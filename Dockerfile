@@ -38,7 +38,7 @@ RUN source scl_source enable rh-python36 && \
     virtualenv /opt/app-root && \
     chown -R 1001:0 /opt/app-root && \
     fix-permissions /opt/app-root && \
-    rpm-file-permissions
+    rpm-file-permissions && \
     pip3.6 install pfurl --user
 
 ENV HOME /var/jenkins_home
@@ -48,16 +48,24 @@ RUN wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenki
   rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key && \
   yum install -y zip unzip java-1.7.0-openjdk docker jenkins && yum clean all 
 
-#RUN  curl -L -o /tmp/git.hpi http://updates.jenkins-ci.org/latest/git.hpi
-#RUN  curl -L -o /tmp/git-client.hpi http://updates.jenkins-ci.org/latest/git-client.hpi
-#RUN  curl -L -o /tmp/scm-api.hpi http://updates.jenkins-ci.org/latest/scm-api.hpi
-#RUN  curl -L -o /tmp/ssh-credentials.hpi http://updates.jenkins-ci.org/latest/ssh-credentials.hpi
-#RUN  curl -L -o /tmp/credentials.hpi http://updates.jenkins-ci.org/latest/credentials.hpi
 
 RUN  usermod -m -d "$JENKINS_HOME" jenkins && \
   chown -R jenkins "$JENKINS_HOME"
 
-COPY jenkins.sh /usr/local/bin/jenkins.sh
+# install basic tools
+RUN yum install --quiet git subversion vim wget curl tar -y && yum clean all -y
+
+# add java opts to .bashrc file
+RUN echo "export JAVA_OPTIONS=${JAVA_OPTIONS}" >> ${JENKINS_HOME}/.bashrc
+
+# create custom run.sh
+RUN wget --quiet http://mirrors.jenkins-ci.org/war/latest/jenkins.war -O /opt/jenkins.war && chown ${appname}:${appname} /opt/jenkins.war
+
+# create custom run.sh
+RUN echo "/opt/jdk18/bin/java ${JAVA_OPTS} -jar /opt/jenkins.war ${JENKINS_OPTIONS}" >> /opt/run.sh
+
+# start jenkins on container start
+CMD su - jenkins -c "sh /opt/run.sh"
 
 # for main web interface:
 EXPOSE 8080
