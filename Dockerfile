@@ -1,7 +1,7 @@
 #REFERENCE Image
 #jenkinsci/slave:latest
 
-FROM fnndsc/centos-pyhon3
+FROM fnndsc/centos-python3
 
 ##########################################
 ##    prepare jenkins slave run env     ##
