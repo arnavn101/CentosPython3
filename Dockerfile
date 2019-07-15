@@ -32,3 +32,4 @@ ENV PATH $PATH:$JAVA_HOME/bin
 
 WORKDIR $HOME
 USER root
+ENTRYPOINT ["/bin/bash"]
