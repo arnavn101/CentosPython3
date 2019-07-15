@@ -30,6 +30,20 @@ RUN pip install pfurl
 ENV JAVA_HOME /usr/java/jdk1.8.0_101
 ENV PATH $PATH:$JAVA_HOME/bin
 
-WORKDIR $HOME
+# Add user jenkins to sudoers with NOPASSWD
+RUN echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set password for the jenkins user (you may want to alter this).
+RUN echo "jenkins:jenkins" | chpasswd
+
+
+# Standard port
+EXPOSE 8080
+
+
 USER root
-CMD ["/bin/bash"]
+ADD entrypoint.sh /home/${user}
+WORKDIR /home/${user}
+RUN chmod 777 /home/entrypoint.sh
+
+ENTRYPOINT [ "/home/entrypoint.sh" ]
