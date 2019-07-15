@@ -3,7 +3,7 @@ pipeline {
 	agent { 
 		docker { 
 			image '13065729n/centos-python3:latest' 
-			args '-u root:root -v $HOME/workspace --entrypoint="/bin/bash"'
+			args '-u root:root -v $HOME/workspace'
 		} 
 	}
 
